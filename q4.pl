@@ -13,25 +13,32 @@ chomp $input1;
 print "Produce random length between 1 and $input1? Type yes, or press enter if no ";
 my $input2 = <STDIN>;
 
-random( $input1, $input2 );
+my $seq = random( $OUT, $input1, $input2 );
+
+close($OUT);
 
 sub random{
 	my ( @args ) = ( @_ );
-	our $size = $args[0];
-	my $random_length = $args[1];
-	chomp $random_length;
-
-	if ( $random_length eq "yes" ) {
-		$size = int( rand $size ) + 1;
+	my $OUTPUT = $args[0];
+	my $size = $args[1];
+	if ( length(@args) > 2 ) {
+		my $random_length = $args[2];
+		chomp $random_length;
+		if ( $random_length eq "yes" ) {
+			$size = int( rand $size ) + 1;
+		}
 	}
 	
 	my @list = ( 'A' , 'T' , 'C' , 'G' );
 	my $i = 0;
+	my $sequence = '';
 	while ( $i < $size ) {
 		my $choice = int( rand @list );
-		print "$list[$choice]";
-		print $OUT "$list[$choice]";
+		$sequence .=  $list[$choice];
 		$i++;
 	}
+	print "$sequence";
+	print $OUTPUT "$sequence";
 	print "\n";
+	return $sequence
 }

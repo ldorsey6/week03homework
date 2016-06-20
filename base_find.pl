@@ -11,9 +11,10 @@ my $file_count = 1;
 while ( $file_count <= 10 ) {
 
 	my $file = "./seq".$file_count;
-	open( my $OUT , '>' , $file ) or die( "Can't open $file ($!)" );
+	#will produce random length between 50 and 100 for starting sequence length
 	my $length = 50 + int( rand( 100 - 50)) + 1;
-	my $seq = random( $length, $OUT );
+	open( my $OUT , '>' , $file ) or die( "Can't open $file ($!)" );
+	my $seq = random( $OUT, $length );
 	my @run = ( "A" , "T" , "C" , "G" );
 	foreach my $nucl ( @run ) {
 		if ( $seq =~ /$nucl{4,}/ ) {
@@ -21,23 +22,32 @@ while ( $file_count <= 10 ) {
 			print $RUN_OUT "$nucl run found in $file\n";
 		}
 	}
+	close($OUT);
 	$file_count++;
 }
 
-
 sub random{
 	my ( @args ) = ( @_ );
-	our $size = $args[0];
-	my $out_file = $args[1];
+	my $OUTPUT = $args[0];
+	my $size = $args[1];
+	if ( length(@args) > 2 ) {
+		my $random_length = $args[2];
+		chomp $random_length;
+		if ( $random_length eq "yes" ) {
+			$size = int( rand $size ) + 1;
+		}
+	}
 	
 	my @list = ( 'A' , 'T' , 'C' , 'G' );
 	my $i = 0;
 	my $sequence = '';
 	while ( $i < $size ) {
-		my $choice = int( rand @list ); 
+		my $choice = int( rand @list );
 		$sequence .=  $list[$choice];
-		print $out_file "$list[$choice]";
 		$i++;
 	}
-	return $sequence;	
+	print "$sequence";
+	print $OUTPUT "$sequence";
+	print "\n";
+	return $sequence
 }
